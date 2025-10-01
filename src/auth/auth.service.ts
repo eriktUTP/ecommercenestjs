@@ -61,15 +61,15 @@ export class AuthService {
         }
 
         const userFound = await this.usersRepository.findOneBy({ email: email })
-        if (!userFound) {
-            return new HttpException('El email no existe', HttpStatus.NOT_FOUND); // 404 no encontrado
-        }
+            if (!userFound) {
+                throw new HttpException('El email no existe', HttpStatus.NOT_FOUND); // 404 no encontrado
+            }
 
         const isPasswordValid = await compare(password, userFound.password);
         if (!isPasswordValid) // Si es password no es válido
         {
-            return new HttpException('La contraeña es incorrecta', HttpStatus.FORBIDDEN); // `403 Phobibido
-            // 403 FORBIDDEN o Prohibido o Acceso denegados , no tiene permisos para acceder a cierta información
+                throw new HttpException('La contraeña es incorrecta', HttpStatus.FORBIDDEN); // 403 Prohibido
+                // 403 FORBIDDEN o Prohibido o Acceso denegados , no tiene permisos para acceder a cierta información
         }
 
         const payload={id:userFound.id,name:userFound.name}

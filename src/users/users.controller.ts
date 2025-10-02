@@ -23,7 +23,7 @@ export class UsersController {
         return this.UserService.create(user);
     }
 
-    @Put(':id') // http://localhost:3000/users/1
+    @Put('update/:id') // http://localhost:3000/users/update/1
     async update(@Param('id', ParseIntPipe) id: number, @Body() user: UpdateUserDto) {
         const updatedUser = await this.UserService.update(id, user);
         if (!updatedUser) {

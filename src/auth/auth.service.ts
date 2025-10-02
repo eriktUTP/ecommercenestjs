@@ -52,7 +52,6 @@ export class AuthService {
     }
 
     async login(loginData: LoginAuthDto) {
-        // si el email fué encontrado regresame el usuario
         const { email, password } = loginData;
 
         // Validación de campos vacíos
@@ -60,27 +59,30 @@ export class AuthService {
             throw new HttpException('Email y contraseña son obligatorios', HttpStatus.BAD_REQUEST);
         }
 
-        const userFound = await this.usersRepository.findOneBy({ email: email })
-            if (!userFound) {
-                throw new HttpException('El email no existe', HttpStatus.NOT_FOUND); // 404 no encontrado
-            }
+        const userFound = await this.usersRepository.findOneBy({ email: email });
+        if (!userFound) {
+            throw new HttpException('El email no existe', HttpStatus.NOT_FOUND);
+        }
 
         const isPasswordValid = await compare(password, userFound.password);
-        if (!isPasswordValid) // Si es password no es válido
-        {
-                throw new HttpException('La contraeña es incorrecta', HttpStatus.FORBIDDEN); // 403 Prohibido
-                // 403 FORBIDDEN o Prohibido o Acceso denegados , no tiene permisos para acceder a cierta información
+        if (!isPasswordValid) {
+            throw new HttpException('La contraseña es incorrecta', HttpStatus.FORBIDDEN);
         }
 
-        const payload={id:userFound.id,name:userFound.name}
-        const token=this.jwtService.sign(payload);
-        const data={
-            user:userFound,
-            token: token
-        }
+        // Generar token JWT
+        const payload = { id: userFound.id, name: userFound.name };
+        const token = this.jwtService.sign(payload);
 
-        return data;
-
+        // Respuesta de login exitoso
+        return {
+            message: 'Inicio de sesión exitoso',
+            user: {
+                id: userFound.id,
+                name: userFound.name,
+                email: userFound.email,
+            },
+            token,
+        };
     }
 
 }
